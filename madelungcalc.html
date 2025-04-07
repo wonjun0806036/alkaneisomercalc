@@ -5,15 +5,16 @@
     <title>NaCl 마델룽 상수 계산기</title>
     <style>
         body { font-family: sans-serif; padding: 20px; }
-        input { padding: 5px; margin-right: 10px; }
+        input { padding: 5px; margin-right: 10px; width: 100px; }
         button { padding: 5px 10px; margin-top: 10px; }
         #output { white-space: pre-wrap; background: #f9f9f9; padding: 10px; margin-top: 20px; border: 1px solid #ccc; }
         #pointsSection { display: none; margin-top: 10px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
-    <h1>NaCl 격자 마델룽 상수 계산기</h1>
-    <label>자연수 n 입력 (반지름 = √n): </label>
+    <h1>NaCl 격자 마델룽 상수 계산기 <small style="font-size: 0.6em; color: gray;">by helloworld13</small></h1>
+    
+    <label>자연수 n 입력 (반지름 = √n까지 계산): </label>
     <input type="number" id="nInput" min="1" />
     <button onclick="calculate()">계산</button>
 
@@ -46,6 +47,43 @@
             return { count, madelung, points };
         }
 
+        function countLatticePoints(n) {
+            const maxCoord = Math.ceil(Math.sqrt(n));
+            let count = 0;
+            const points = [];
+
+            for (let a = -maxCoord; a <= maxCoord; a++) {
+                for (let b = -maxCoord; b <= maxCoord; b++) {
+                    for (let c = -maxCoord; c <= maxCoord; c++) {
+                        if (a === 0 && b === 0 && c === 0) continue;
+                        const sumSq = a * a + b * b + c * c;
+                        if (sumSq === n) {
+                            count++;
+                            points.push(`${a} + ${b}i + ${c}j`);
+                        }
+                    }
+                }
+            }
+            return { count, points };
+        }
+
+        function calculateSeries(maxN) {
+            let total = 0;
+            const terms = [];
+
+            for (let k = 1; k <= maxN; k++) {
+                const { count } = countLatticePoints(k);
+                if (count === 0) continue;
+
+                const sign = ((k % 2) === 1) ? 1 : -1;
+                const term = sign * (count / Math.sqrt(k));
+                total += term;
+                terms.push(`${sign > 0 ? "+" : "-"} ${count}/√${k}`);
+            }
+
+            return { total, terms };
+        }
+
         function calculate() {
             const n = parseInt(document.getElementById("nInput").value);
             const output = document.getElementById("output");
@@ -57,14 +95,18 @@
             }
 
             const { count, madelung, points } = countLatticePointsAndMadelung(n);
+            const { total, terms } = calculateSeries(n);
 
             output.textContent =
-                `▶ 입력값: n = ${n}, 반지름 √n = ${Math.sqrt(n).toFixed(4)}\n` +
-                `▶ 정수 격자점 개수: ${count}\n\n` +
-                `▶ 계산된 마델룽 상수:\n` +
-                `    M(√${n}) ≈ ${madelung.toFixed(6)}\n`;
+                `▶ 반지름 √n = ${Math.sqrt(n).toFixed(4)}\n` +
+                `▶ 거리 √n에 위치한 정수 격자점 개수: ${count}개\n\n` +
+                `▶ 거리 √n에서의 마델룽 수:\n` +
+                `    M(√${n}) ≈ ${madelung.toFixed(6)}\n\n` +
+                `▶ √n까지 계산한 마델룽 상수:\n` +
+                `    M ≈ ${total.toFixed(6)}\n` +
+                `    (${terms.join(" ")})`;
 
-            pointSection.textContent = `해당 점 목록:\n` + points.map(p => `  ${p}`).join("\n");
+            pointSection.textContent = `해당 거리의 점 목록 (√${n} 거리 위):\n` + points.map(p => `  ${p}`).join("\n");
             pointSection.style.display = "none";
             document.getElementById("togglePointsBtn").textContent = "격자점 목록 보기";
         }
