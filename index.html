@@ -42,7 +42,7 @@
 
       if (nextId === 0) {
         nodeList.push([]);
-        generateTrees(n, nodeList, 1, uniqueSet);
+        generateTrees(n, nodeList, nextId + 1, uniqueSet);  // ← 수정된 부분: nextId + 1
         return;
       }
 
@@ -74,7 +74,7 @@
       return true;
     }
 
-    // ✅ 수정된 canonical form 함수: 모든 노드를 루트로 시도
+    // 모든 노드를 루트로 시도해 최소 문자열 선택 (동형 구조 제거)
     function canonicalForm(adj) {
       let best = null;
       for (let root = 0; root < adj.length; root++) {
