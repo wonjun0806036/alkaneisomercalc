@@ -42,7 +42,7 @@
 
       if (nextId === 0) {
         nodeList.push([]);
-        generateTrees(n, nodeList, nextId + 1, uniqueSet);  // ← 수정된 부분: nextId + 1
+        generateTrees(n, nodeList, nextId + 1, uniqueSet);
         return;
       }
 
@@ -57,8 +57,15 @@
       }
     }
 
+    // ✅ 수정: 노드 수가 1~2개인 경우도 트리로 간주
     function isValidTree(adj) {
       const n = adj.length;
+
+      if (n === 1) return true;
+      if (n === 2) {
+        return adj[0].length === 1 && adj[1].length === 1;
+      }
+
       const visited = Array(n).fill(false);
       if (!dfs(adj, 0, -1, visited)) return false;
       return visited.every(v => v);
@@ -74,7 +81,6 @@
       return true;
     }
 
-    // 모든 노드를 루트로 시도해 최소 문자열 선택 (동형 구조 제거)
     function canonicalForm(adj) {
       let best = null;
       for (let root = 0; root < adj.length; root++) {
