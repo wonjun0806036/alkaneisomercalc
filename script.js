@@ -74,9 +74,17 @@
       return true;
     }
 
+    // ✅ 수정된 canonical form 함수: 모든 노드를 루트로 시도
     function canonicalForm(adj) {
-      const visited = Array(adj.length).fill(false);
-      return encode(adj, 0, visited);
+      let best = null;
+      for (let root = 0; root < adj.length; root++) {
+        const visited = Array(adj.length).fill(false);
+        const code = encode(adj, root, visited);
+        if (best === null || code < best) {
+          best = code;
+        }
+      }
+      return best;
     }
 
     function encode(adj, u, visited) {
