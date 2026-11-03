@@ -27,7 +27,7 @@ for required in ("html", "head", "body", "title", "script", "input", "button"):
     if required not in parser.tags:
         raise SystemExit(f"Missing required HTML element: {required}")
 
-scripts = re.findall(r"<script(?:\\s[^>]*)?>(.*?)</script\\s*>", html, re.I | re.S)
+scripts = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script\s*>", html, re.I | re.S)
 if not scripts:
     raise SystemExit("No inline JavaScript found")
 
